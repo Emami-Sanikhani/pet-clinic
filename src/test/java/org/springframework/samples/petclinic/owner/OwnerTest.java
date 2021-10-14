@@ -152,6 +152,41 @@ class OwnerTest {
 	}
 
 	@Test
+	void testAddPet() throws NoSuchFieldException, IllegalAccessException {
+		Set<Pet> addPetTestValue = buildPetsTestData();
+		setFieldValue("pets", addPetTestValue);
+		Pet newPet = new Pet();
+		newPet.setName("pet3");
+
+		// Method Under Test
+		this.owner.addPet(newPet);
+
+		Set<Pet> ownerPets = (Set<Pet>) getFieldValue("pets");
+		assertEquals(3, ownerPets.size());
+		addPetTestValue.add(newPet);
+		assertEquals(addPetTestValue, ownerPets);
+	}
+
+	@Test
+	void testGetPets() throws NoSuchFieldException, IllegalAccessException {
+		Set<Pet> getPetsTestValue = buildPetsTestData();
+		setFieldValue("pets", getPetsTestValue);
+
+		// Method Under Test
+		List<Pet> gottenPets = this.owner.getPets();
+
+		for (Pet p : gottenPets) {
+			assertTrue(getPetsTestValue.contains(p));
+		}
+
+		for (Pet p : getPetsTestValue) {
+			assertTrue(gottenPets.contains(p));
+		}
+
+		assertEquals(getPetsTestValue.size(), gottenPets.size());
+	}
+
+	@Test
 	void testRemovePet() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> removePetTestValue = buildPetsTestData();
 		setFieldValue("pets", removePetTestValue);

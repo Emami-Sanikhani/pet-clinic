@@ -40,13 +40,26 @@ public class OwnerTheoryTest {
 	public static String[] petNames = {"Leo", "Basil", "JewelRosy", "Iggy", "George"};
 
 	@Theory
-	public void testGetPet(String petName) {
+	public void testGetPet(String petName) throws NoSuchFieldException, IllegalAccessException {
+		// Assumptions
 		assumeTrue(petName != null);
+		Field petsField = this.owner.getClass().getDeclaredField("pets");
+		petsField.setAccessible(true);
+		Set<Pet> pets = (Set<Pet>) petsField.get(this.owner);
+		boolean hasPet = false;
+		for (Pet p : pets) {
+			if (p.getName().equals(petName)) {
+				hasPet = true;
+				break;
+			}
+		}
+		assumeTrue(hasPet);
 
+		// Act
 		Pet gottenPet = this.owner.getPet(petName);
 
+		// Assertions
 		assertEquals(petName, gottenPet.getName());
-
 	}
 
 	@After

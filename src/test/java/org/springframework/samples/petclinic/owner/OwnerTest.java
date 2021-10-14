@@ -3,15 +3,25 @@ package org.springframework.samples.petclinic.owner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
+@RunWith(Theories.class)
 public class OwnerTest {
 
-	private Owner owner = null;
+	@DataPoints
+	public static String[] petNames = {"Leo", "Basil", "JewelRosy", "Iggy", "George"};
+
+	private Owner owner;
+	private Set<Pet> petsData;
 
 
 	private void setFieldValue(String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
@@ -34,20 +44,17 @@ public class OwnerTest {
 		return new HashSet<>(Arrays.asList(pet1, pet2));
 	}
 
-//	private static Field getField(Class<?> type, String name) throws NoSuchFieldException {
-//		try {
-//			return type.getDeclaredField(name);
-//		} catch (NoSuchFieldException e) {
-//			if (type.getSuperclass() != null) {
-//				return getField(type.getSuperclass(), name);
-//			}
-//		}
-//		throw new NoSuchFieldException(name);
-//	}
-
 	@Before
-	public void setup() {
+	public void setup() throws NoSuchFieldException, IllegalAccessException {
 		this.owner = new Owner();
+		Set<Pet> pets = new HashSet<>();
+		for (String pName : petNames) {
+			Pet pet = new Pet();
+			pet.setName(pName);
+			pets.add(pet);
+		}
+		this.petsData = pets;
+		setFieldValue("pets", this.petsData);
 	}
 
 	@Test
@@ -127,69 +134,64 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> petsInternalTestValue = buildPetsTestData();
-		setFieldValue("pets", petsInternalTestValue);
+		setFieldValue("pets", new HashSet<>(this.petsData));
 		assertEquals(
 			"conflict in field 'pets' by 'getPetsInternal' method",
-			petsInternalTestValue,
+			this.petsData,
 			this.owner.getPetsInternal()    // Method Under Test
 		);
 	}
 
 	@Test
 	public void testSetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> petsInternalTestValue = buildPetsTestData();
-
 		// Method Under Test
-		this.owner.setPetsInternal(petsInternalTestValue);
+		this.owner.setPetsInternal(this.petsData);
 
 		assertEquals(
 			"conflict in field 'pets' by 'setPetsInternal' method",
-			petsInternalTestValue,
+			this.petsData,
 			getFieldValue("pets")
 		);
 	}
 
 	@Test
 	public void testAddPet() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> addPetTestValue = buildPetsTestData();
-		setFieldValue("pets", addPetTestValue);
+		setFieldValue("pets", new HashSet<>(this.petsData));
 		Pet newPet = new Pet();
-		newPet.setName("pet3");
+		newPet.setName("new pet name");
 
 		// Method Under Test
 		this.owner.addPet(newPet);
 
 		Set<Pet> ownerPets = (Set<Pet>) getFieldValue("pets");
-		assertEquals(3, ownerPets.size());
-		addPetTestValue.add(newPet);
-		assertEquals(addPetTestValue, ownerPets);
+		assertEquals(this.petsData.size() + 1, ownerPets.size());
+		Set<Pet> expected = new HashSet<>(this.petsData);
+		expected.add(newPet);
+		assertEquals(expected, ownerPets);
 	}
 
 	@Test
 	public void testGetPets() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> getPetsTestValue = buildPetsTestData();
-		setFieldValue("pets", getPetsTestValue);
+		setFieldValue("pets", new HashSet<>(this.petsData));
 
 		// Method Under Test
 		List<Pet> gottenPets = this.owner.getPets();
 
 		for (Pet p : gottenPets) {
-			assertTrue(getPetsTestValue.contains(p));
+			assertTrue(this.petsData.contains(p));
 		}
 
-		for (Pet p : getPetsTestValue) {
+		for (Pet p : this.petsData) {
 			assertTrue(gottenPets.contains(p));
 		}
 
-		assertEquals(getPetsTestValue.size(), gottenPets.size());
+		assertEquals(this.petsData.size(), gottenPets.size());
 	}
 
 	@Test
 	public void testRemovePet() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> removePetTestValue = buildPetsTestData();
-		setFieldValue("pets", removePetTestValue);
-		Pet removedPet = (Pet) removePetTestValue.toArray()[0];
+		setFieldValue("pets", new HashSet<>(this.petsData));
+		Pet removedPet = (Pet) this.petsData.toArray()[0];
 		String removedPetName = removedPet.getName();
 
 		// Method Under Test
@@ -207,10 +209,9 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPet() throws NoSuchFieldException, IllegalAccessException {
-		Set<Pet> initialPets = buildPetsTestData();
-		setFieldValue("pets", initialPets);
+		setFieldValue("pets", new HashSet<>(this.petsData));
 
-		List<Pet> petList = new ArrayList<>(initialPets);
+		List<Pet> petList = new ArrayList<>(this.petsData);
 		Pet firstPet = petList.get(0);
 		Pet secondPet = petList.get(1);
 
@@ -224,8 +225,30 @@ public class OwnerTest {
 		assertNull(gottenPet);
 	}
 
+	@Theory
+	public void testTheoryGetPet(String petName) throws NoSuchFieldException, IllegalAccessException {
+		// Assumptions
+		assumeTrue(petName != null);
+		Set<Pet> pets = (Set<Pet>) getFieldValue("pets");
+		boolean hasPet = false;
+		for (Pet p : pets) {
+			if (p.getName().equals(petName)) {
+				hasPet = true;
+				break;
+			}
+		}
+		assumeTrue(hasPet);
+
+		// Act
+		Pet gottenPet = this.owner.getPet(petName);
+
+		// Assertions
+		assertEquals(petName, gottenPet.getName());
+	}
+
 	@After
 	public void teardown() {
 		this.owner = null;
+		this.petsData = null;
 	}
 }

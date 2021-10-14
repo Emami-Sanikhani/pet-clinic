@@ -1,15 +1,15 @@
 package org.springframework.samples.petclinic.owner;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class OwnerTest {
+public class OwnerTest {
 
 	private Owner owner = null;
 
@@ -45,114 +45,113 @@ class OwnerTest {
 //		throw new NoSuchFieldException(name);
 //	}
 
-	@BeforeEach
-	void setup() {
+	@Before
+	public void setup() {
 		this.owner = new Owner();
 	}
 
 	@Test
-	void testGetAddress() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetAddress() throws NoSuchFieldException, IllegalAccessException {
 		String addressTestName = "Getter Dummy Address";
 		setFieldValue("address", addressTestName);
 		assertEquals(
+			"conflict in field 'address' by 'getAddress' method",
 			addressTestName,
-			this.owner.getAddress(),    // Method Under Test
-			"conflict in field 'address' by 'getAddress' method"
+			this.owner.getAddress()    // Method Under Test
 		);
 	}
 
 	@Test
-	void testSetAddress() throws NoSuchFieldException, IllegalAccessException {
+	public void testSetAddress() throws NoSuchFieldException, IllegalAccessException {
 		String addressTestName = "Setter Dummy Address";
 
 		// Method Under Test
 		this.owner.setAddress(addressTestName);
 
 		assertEquals(
+			"conflict in field 'address' by 'setAddress' method",
 			addressTestName,
-			getFieldValue("address"),
-			"conflict in field 'address' by 'setAddress' method"
+			getFieldValue("address")
 		);
 	}
 
 	@Test
-	void testGetCity() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetCity() throws NoSuchFieldException, IllegalAccessException {
 		String cityTestName = "Getter Dummy City";
 		setFieldValue("city", cityTestName);
 		assertEquals(
+			"conflict in field 'city' by 'getCity' method",
 			cityTestName,
-			// Method Under Test
-			this.owner.getCity(),    // Method Under Test
-			"conflict in field 'city' by 'getCity' method"
+			this.owner.getCity()    // Method Under Test
 		);
 	}
 
 	@Test
-	void testSetCity() throws NoSuchFieldException, IllegalAccessException {
+	public void testSetCity() throws NoSuchFieldException, IllegalAccessException {
 		String cityTestName = "Setter Dummy City";
 
 		// Method Under Test
 		this.owner.setCity(cityTestName);
 
 		assertEquals(
+			"conflict in field 'city' by 'setCity' method",
 			cityTestName,
-			getFieldValue("city"),
-			"conflict in field 'city' by 'setCity' method"
+			getFieldValue("city")
 		);
 	}
 
 	@Test
-	void testGetTelephone() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetTelephone() throws NoSuchFieldException, IllegalAccessException {
 		String telephoneTestValue = "09123456789";
 		setFieldValue("telephone", telephoneTestValue);
 		assertEquals(
+			"conflict in field 'telephone' by 'getTelephone' method",
 			telephoneTestValue,
-			this.owner.getTelephone(),    // Method Under Test
-			"conflict in field 'telephone' by 'getTelephone' method"
+			this.owner.getTelephone()    // Method Under Test
 		);
 	}
 
 	@Test
-	void testSetTelephone() throws NoSuchFieldException, IllegalAccessException {
+	public void testSetTelephone() throws NoSuchFieldException, IllegalAccessException {
 		String telephoneTestValue = "09123456789";
 
 		// Method Under Test
 		this.owner.setTelephone(telephoneTestValue);
 
 		assertEquals(
+			"conflict in field 'telephone' by 'setTelephone' method",
 			telephoneTestValue,
-			getFieldValue("telephone"),
-			"conflict in field 'telephone' by 'setTelephone' method"
+			getFieldValue("telephone")
 		);
 	}
 
 	@Test
-	void testGetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> petsInternalTestValue = buildPetsTestData();
 		setFieldValue("pets", petsInternalTestValue);
 		assertEquals(
+			"conflict in field 'pets' by 'getPetsInternal' method",
 			petsInternalTestValue,
-			this.owner.getPetsInternal(),    // Method Under Test
-			"conflict in field 'pets' by 'getPetsInternal' method"
+			this.owner.getPetsInternal()    // Method Under Test
 		);
 	}
 
 	@Test
-	void testSetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
+	public void testSetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> petsInternalTestValue = buildPetsTestData();
 
 		// Method Under Test
 		this.owner.setPetsInternal(petsInternalTestValue);
 
 		assertEquals(
+			"conflict in field 'pets' by 'setPetsInternal' method",
 			petsInternalTestValue,
-			getFieldValue("pets"),
-			"conflict in field 'pets' by 'setPetsInternal' method"
+			getFieldValue("pets")
 		);
 	}
 
 	@Test
-	void testAddPet() throws NoSuchFieldException, IllegalAccessException {
+	public void testAddPet() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> addPetTestValue = buildPetsTestData();
 		setFieldValue("pets", addPetTestValue);
 		Pet newPet = new Pet();
@@ -168,7 +167,7 @@ class OwnerTest {
 	}
 
 	@Test
-	void testGetPets() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPets() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> getPetsTestValue = buildPetsTestData();
 		setFieldValue("pets", getPetsTestValue);
 
@@ -187,7 +186,7 @@ class OwnerTest {
 	}
 
 	@Test
-	void testRemovePet() throws NoSuchFieldException, IllegalAccessException {
+	public void testRemovePet() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> removePetTestValue = buildPetsTestData();
 		setFieldValue("pets", removePetTestValue);
 		Pet removedPet = (Pet) removePetTestValue.toArray()[0];
@@ -199,15 +198,15 @@ class OwnerTest {
 		for (Pet pet : (Set<Pet>) getFieldValue("pets")) {
 			String name = pet.getName();
 			assertNotEquals(
+				String.format("pet with name %s is not removed by 'removePet' method", removedPetName),
 				removedPetName,
-				name,
-				String.format("pet with name %s is not removed by 'removePet' method", removedPetName)
+				name
 			);
 		}
 	}
 
 	@Test
-	void testGetPet() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPet() throws NoSuchFieldException, IllegalAccessException {
 		Set<Pet> initialPets = buildPetsTestData();
 		setFieldValue("pets", initialPets);
 
@@ -225,8 +224,8 @@ class OwnerTest {
 		assertNull(gottenPet);
 	}
 
-	@AfterEach
-	void teardown() {
+	@After
+	public void teardown() {
 		this.owner = null;
 	}
 }

@@ -133,7 +133,7 @@ public class OwnerTest {
 	}
 
 	@Test
-	public void testGetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPetsInternal() {
 		assertEquals(
 			"conflict in field 'pets' by 'getPetsInternal' method",
 			this.petsData,
@@ -169,7 +169,7 @@ public class OwnerTest {
 	}
 
 	@Test
-	public void testGetPets() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPets() {
 
 		// Method Under Test
 		List<Pet> gottenPets = this.owner.getPets();
@@ -204,7 +204,7 @@ public class OwnerTest {
 	}
 
 	@Test
-	public void testGetPet() throws NoSuchFieldException, IllegalAccessException {
+	public void testGetPet() {
 
 		List<Pet> petList = new ArrayList<>(this.petsData);
 		Pet firstPet = petList.get(0);

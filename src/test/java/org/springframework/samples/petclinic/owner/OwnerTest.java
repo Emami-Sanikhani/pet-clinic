@@ -36,14 +36,6 @@ public class OwnerTest {
 		return field.get(this.owner);
 	}
 
-	private Set<Pet> buildPetsTestData() {
-		Pet pet1 = new Pet();
-		pet1.setName("pet1");
-		Pet pet2 = new Pet();
-		pet2.setName("pet2");
-		return new HashSet<>(Arrays.asList(pet1, pet2));
-	}
-
 	@Before
 	public void setup() throws NoSuchFieldException, IllegalAccessException {
 		this.owner = new Owner();
@@ -205,7 +197,6 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPet() {
-
 		List<Pet> petList = new ArrayList<>(this.petsData);
 		Pet firstPet = petList.get(0);
 		Pet secondPet = petList.get(1);

@@ -9,20 +9,40 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(Theories.class)
 public class OwnerTest {
 
 	@DataPoints
-	public static String[] petNames = {"Leo", "Basil", "JewelRosy", "Iggy", "George"};
+	public static String[] petNames = {"Leo", "Basil", "JewelRosy", "Iggy", "George", "Freddy"};
+
+	@DataPoints
+	public static Set[] petArrays = {
+		buildPetSet("Leo", "Basil", "Iggy"),
+		buildPetSet("JewelRosy", "George", "Lucky"),
+		buildPetSet("Freddy", "Mulligan", "MaxSamantha")
+	};
 
 	private Owner owner;
 	private Set<Pet> petsData;
 
+	public static Set<Pet> buildPetSet(String... names) {
+		Set<Pet> pets = new HashSet<>();
+		for (String n : names) {
+			Pet p = new Pet();
+			p.setName(n);
+			pets.add(p);
+		}
+		return pets;
+	}
 
 	private void setFieldValue(String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
 		Field field = this.owner.getClass().getDeclaredField(fieldName);
@@ -212,24 +232,19 @@ public class OwnerTest {
 	}
 
 	@Theory
-	public void testTheoryGetPet(String petName) throws NoSuchFieldException, IllegalAccessException {
+	public void testTheoryGetPet(Set<Pet> pets, String wanted) throws NoSuchFieldException, IllegalAccessException {
+		setFieldValue("pets", pets);
+
 		// Assumptions
-		assumeTrue(petName != null);
-		Set<Pet> pets = (Set<Pet>) getFieldValue("pets");
-		boolean hasPet = false;
-		for (Pet p : pets) {
-			if (p.getName().equals(petName)) {
-				hasPet = true;
-				break;
-			}
-		}
-		assumeTrue(hasPet);
+		assumeTrue(wanted != null);
+		assumeFalse(pets.contains(null));
+		assumeTrue(pets.stream().anyMatch(x -> x.getName().equals(wanted)));
 
 		// Act
-		Pet gottenPet = this.owner.getPet(petName);
+		Pet gottenPet = this.owner.getPet(wanted);
 
 		// Assertions
-		assertEquals(petName, gottenPet.getName());
+		assertEquals(wanted, gottenPet.getName());
 	}
 
 	@After

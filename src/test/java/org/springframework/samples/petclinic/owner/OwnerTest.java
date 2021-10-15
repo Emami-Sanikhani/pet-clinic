@@ -238,13 +238,18 @@ public class OwnerTest {
 		// Assumptions
 		assumeTrue(wanted != null);
 		assumeFalse(pets.contains(null));
-		assumeTrue(pets.stream().anyMatch(x -> x.getName().equals(wanted)));
+		boolean exists = pets.stream().anyMatch(x -> x.getName().equals(wanted));
 
 		// Act
 		Pet gottenPet = this.owner.getPet(wanted);
 
 		// Assertions
-		assertEquals(wanted, gottenPet.getName());
+		if (exists) {
+			assertNotNull(gottenPet);
+			assertEquals(wanted, gottenPet.getName());
+		}
+		else
+			assertNull(gottenPet);
 	}
 
 	@After

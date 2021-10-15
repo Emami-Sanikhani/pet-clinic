@@ -54,7 +54,7 @@ public class OwnerTest {
 			pets.add(pet);
 		}
 		this.petsData = pets;
-		setFieldValue("pets", this.petsData);
+		setFieldValue("pets", new HashSet<>(this.petsData));
 	}
 
 	@Test
@@ -134,7 +134,6 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPetsInternal() throws NoSuchFieldException, IllegalAccessException {
-		setFieldValue("pets", new HashSet<>(this.petsData));
 		assertEquals(
 			"conflict in field 'pets' by 'getPetsInternal' method",
 			this.petsData,
@@ -156,7 +155,6 @@ public class OwnerTest {
 
 	@Test
 	public void testAddPet() throws NoSuchFieldException, IllegalAccessException {
-		setFieldValue("pets", new HashSet<>(this.petsData));
 		Pet newPet = new Pet();
 		newPet.setName("new pet name");
 
@@ -172,7 +170,6 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPets() throws NoSuchFieldException, IllegalAccessException {
-		setFieldValue("pets", new HashSet<>(this.petsData));
 
 		// Method Under Test
 		List<Pet> gottenPets = this.owner.getPets();
@@ -190,7 +187,6 @@ public class OwnerTest {
 
 	@Test
 	public void testRemovePet() throws NoSuchFieldException, IllegalAccessException {
-		setFieldValue("pets", new HashSet<>(this.petsData));
 		Pet removedPet = (Pet) this.petsData.toArray()[0];
 		String removedPetName = removedPet.getName();
 
@@ -209,7 +205,6 @@ public class OwnerTest {
 
 	@Test
 	public void testGetPet() throws NoSuchFieldException, IllegalAccessException {
-		setFieldValue("pets", new HashSet<>(this.petsData));
 
 		List<Pet> petList = new ArrayList<>(this.petsData);
 		Pet firstPet = petList.get(0);

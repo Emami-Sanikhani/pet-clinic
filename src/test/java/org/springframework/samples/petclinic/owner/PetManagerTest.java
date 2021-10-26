@@ -19,7 +19,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PetManagerTest {
@@ -77,7 +79,7 @@ public class PetManagerTest {
 		petList = new ArrayList<>();
 		int i = 0;
 		for (String s : petNames) {
-			Pet p = new Pet();
+			Pet p = spy(new Pet());
 			p.setName(s);
 			p.setType(petTypeList.get(i % petTypeList.size()));
 			petList.add(p);
@@ -98,7 +100,7 @@ public class PetManagerTest {
 	public void initializeOwners() {
 		ownerList = new ArrayList<>();
 		for (String s : ownerNames) {
-			Owner o = new Owner();
+			Owner o = spy(new Owner());
 			o.setFirstName(s);
 			ownerList.add(o);
 		}
@@ -148,6 +150,22 @@ public class PetManagerTest {
 		}
 	}
 
+	// Mock(Spy)
+	// Behavior Verification
+	@Test
+	public void testBehavioralFindPet() {
+		for (Pet p : petList) {
+			clearInvocations(pets, log);
+
+			// Act
+			petManager.findPet(p.getId());
+
+			// Verification
+			verify(pets).get(p.getId());
+			verify(log).info(anyString(), anyInt());
+		}
+	}
+
 	// Mock
 	// State Verification
 	@Test
@@ -161,6 +179,22 @@ public class PetManagerTest {
 			// Assertion
 			assertNotNull(actual);
 			assertEquals(expected, actual);
+		}
+	}
+
+	// Mock(Spy)
+	// Behavior Verification
+	@Test
+	public void testBehavioralFindOwner() {
+		for (Owner o : ownerList) {
+			clearInvocations(owners, log);
+
+			// Act
+			petManager.findOwner(o.getId());
+
+			// Verification
+			verify(owners).findById(o.getId());
+			verify(log).info(anyString(), anyInt());
 		}
 	}
 
@@ -186,6 +220,22 @@ public class PetManagerTest {
 		}
 	}
 
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralNewPet() {
+		for (Owner o : ownerList) {
+			clearInvocations(log, o);
+
+			// Act
+			petManager.newPet(o);
+
+			// Verification
+			verify(o).addPet(any());
+			verify(log).info(anyString(), anyInt());
+		}
+	}
+
 	// Mock
 	// State Verification
 	@Test
@@ -202,6 +252,24 @@ public class PetManagerTest {
 			differences.removeAll(petsBefore);
 			assertEquals(1, differences.size());
 			assertEquals(newPet, differences.get(0));
+		}
+	}
+
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralSaveNewPet() {
+		for (Owner o : ownerList) {
+			clearInvocations(log, pets, o);
+
+			// Act
+			Pet p = new Pet();
+			petManager.savePet(p, o);
+
+			// Verification
+			verify(o).addPet(p);
+			verify(pets).save(p);
+			verify(log).info(anyString(), nullable(Integer.class));
 		}
 	}
 
@@ -226,6 +294,28 @@ public class PetManagerTest {
 		}
 	}
 
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralSaveOldPet() {
+		for (Owner o : ownerList) {
+			Set<Pet> petsBefore = new HashSet<>(o.getPets());
+			if (petsBefore.isEmpty()) continue;
+			Pet oldPet = petsBefore.stream().findFirst().get();
+			oldPet.setOwner(null);
+
+			clearInvocations(log, pets, o);
+
+			// Act
+			petManager.savePet(oldPet, o);
+
+			// Verification
+			verify(o).addPet(oldPet);
+			verify(pets).save(oldPet);
+			verify(log).info(anyString(), anyInt());
+		}
+	}
+
 	// Mock
 	// State Verification
 	@Test
@@ -241,6 +331,23 @@ public class PetManagerTest {
 			Set<Pet> actualSet = new HashSet<>(actual);
 			assertEquals(expected.size(), actual.size());
 			assertEquals(expectedSet, actualSet);
+		}
+	}
+
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralGetOwnerPets() {
+		for (Owner o : ownerList) {
+			clearInvocations(owners, log, o);
+
+			// Act
+			petManager.getOwnerPets(o.getId());
+
+			// Verification
+			verify(o).getPets();
+			verify(owners).findById(o.getId());
+			verify(log, atLeast(1)).info(anyString(), anyInt());
 		}
 	}
 
@@ -260,6 +367,28 @@ public class PetManagerTest {
 		}
 	}
 
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralGetOwnerPetTypes() {
+		for (Owner o : ownerList) {
+			for (Pet p : o.getPets())
+				clearInvocations(p);
+			clearInvocations(owners, log, o);
+
+			// Act
+			petManager.getOwnerPetTypes(o.getId());
+
+			// Verification
+			verify(owners).findById(o.getId());
+			verify(o).getPets();
+			for (Pet p : o.getPets()) {
+				verify(p).getType();
+			}
+			verify(log, atLeast(1)).info(anyString(), anyInt());
+		}
+	}
+
 	// Mock
 	// State Verification
 	@Test
@@ -276,6 +405,26 @@ public class PetManagerTest {
 			// Assertion
 			assertEquals(expected.size(), actual.size());
 			assertEquals(new HashSet<>(expected), new HashSet<>(actual));
+		}
+	}
+
+	// Mock, Spy
+	// Behavior Verification
+	@Test
+	public void testBehavioralGetVisitsBetween() {
+		LocalDate start = LocalDate.of(2000, 1, 1);
+		LocalDate end = LocalDate.of(2022, 1, 1);
+		for (Pet p : petList) {
+			clearInvocations(pets, log, p);
+
+			// Act
+			petManager.getVisitsBetween(p.getId(), start, end);
+
+			// Verification
+			verify(pets).get(p.getId());
+			verify(p).getVisitsBetween(start, end);
+			verify(log).info(anyString(), anyInt(), any(LocalDate.class), any(LocalDate.class));
+
 		}
 	}
 }

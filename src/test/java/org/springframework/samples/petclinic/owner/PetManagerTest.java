@@ -9,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.samples.petclinic.utility.PetTimedCache;
+import org.springframework.samples.petclinic.visit.Visit;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,10 +25,23 @@ import static org.mockito.BDDMockito.given;
 public class PetManagerTest {
 
 	private static final String[] petTypeNames = {"dog", "cat", "parrot"};
+	private static final LocalDate[] visitTimes = {
+		LocalDate.of(2000, 10, 13),
+		LocalDate.of(2012, 5, 5),
+		LocalDate.of(2018, 12, 19),
+		LocalDate.of(2020, 2, 1),
+		LocalDate.now(),
+		LocalDate.now().minusWeeks(3),
+		LocalDate.of(2021, 10, 18),
+		LocalDate.of(2015, 1, 29),
+		LocalDate.of(2014, 5, 20),
+		LocalDate.of(2010, 9, 11)
+	};
 	private static final String[] petNames = {"Leo", "Basil", "JewelRosy", "Iggy", "George", "Freddy"};
 	private static final String[] ownerNames = {"Saman", "Mahan", "Poorya", "Kianoosh"};
 
 	private static List<PetType> petTypeList;
+	private static List<Visit> visitList;
 	private static List<Pet> petList;
 	private static List<Owner> ownerList;
 
@@ -49,6 +64,15 @@ public class PetManagerTest {
 		}
 	}
 
+	public void initializeVisits() {
+		visitList = new ArrayList<>();
+		for (LocalDate ld : visitTimes) {
+			Visit v = new Visit();
+			v.setDate(ld);
+			visitList.add(v);
+		}
+	}
+
 	public void initializePets() {
 		petList = new ArrayList<>();
 		int i = 0;
@@ -59,6 +83,16 @@ public class PetManagerTest {
 			petList.add(p);
 			i++;
 		}
+		petList.get(0).addVisit(visitList.get(0));
+		petList.get(0).addVisit(visitList.get(1));
+		petList.get(1).addVisit(visitList.get(2));
+		petList.get(1).addVisit(visitList.get(3));
+		petList.get(2).addVisit(visitList.get(4));
+		petList.get(3).addVisit(visitList.get(5));
+		petList.get(3).addVisit(visitList.get(6));
+		petList.get(3).addVisit(visitList.get(7));
+		petList.get(4).addVisit(visitList.get(8));
+		petList.get(4).addVisit(visitList.get(9));
 	}
 
 	public void initializeOwners() {
@@ -83,6 +117,7 @@ public class PetManagerTest {
 	@Before
 	public void setup() {
 		initializePetTypes();
+		initializeVisits();
 		initializePets();
 		initializeOwners();
 		for (int i = 0; i < petList.size(); i++) {
@@ -229,6 +264,18 @@ public class PetManagerTest {
 	// State Verification
 	@Test
 	public void testGetVisitsBetween() {
-		fail("not implemented test");
+		LocalDate start = LocalDate.of(2020, 1, 1);
+		LocalDate end = LocalDate.of(2022, 1, 1);
+		for (Pet p : petList) {
+			// Assume this method works properly for Pet class
+			List<Visit> expected = p.getVisitsBetween(start, end);
+
+			// Act
+			List<Visit> actual = petManager.getVisitsBetween(p.getId(), start, end);
+
+			// Assertion
+			assertEquals(expected.size(), actual.size());
+			assertEquals(new HashSet<>(expected), new HashSet<>(actual));
+		}
 	}
 }

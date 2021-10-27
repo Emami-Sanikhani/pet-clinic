@@ -166,6 +166,21 @@ public class PetManagerTest {
 		}
 	}
 
+	// *Part 3*
+	// State Verification
+	@Test
+	public void testStateFindPet() {
+		for (Pet p : petList) {
+			clearInvocations(pets, log);
+
+			// Act
+			Pet actualPet = petManager.findPet(p.getId());
+
+			// Assertion
+			assertEquals(actualPet, p);
+		}
+	}
+
 	// Mock
 	// State Verification
 	@Test

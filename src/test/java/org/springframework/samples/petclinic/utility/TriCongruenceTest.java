@@ -195,12 +195,17 @@ class TriCongruenceTest {
 	}
 
 	/**
-	 * TODO
-	 * explain your answer here
+	 * predicate = (ab + cd)
+	 * We can satisfy CUTPNFP coverage by {TTTF, FTTT, FTTF, TFTF, FTFT, FTTF}
+	 * But for satisfying UTP coverage, we must satisfy implicants in predicate and !predicate
+	 * !predicate = !a!c + !a!d + !b!c + !b!d
+	 * So for UTPC satisfaction we should have TR 'TFFT' for implicant !b!c
+	 * As we can see this TR is not in CUTPNFP TRs
+	 * So CUTPNFP doesn't subsume UTPC
 	 */
 	private static boolean questionTwo(boolean a, boolean b, boolean c, boolean d, boolean e) {
 		boolean predicate = false;
-//		predicate = a predicate with any number of clauses
+		predicate = (a && b) || (c && d);
 		return predicate;
 	}
 }

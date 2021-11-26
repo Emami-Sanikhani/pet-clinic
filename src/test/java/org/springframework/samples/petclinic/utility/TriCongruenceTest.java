@@ -40,14 +40,6 @@ class TriCongruenceTest {
 			@Valuation(clause = 'c', valuation = false)
 		}
 	)
-	@Test
-	public void Line14PredicateTestFFF1() {
-		Triangle t1 = new Triangle(2, 3, 7);
-		Triangle t2 = new Triangle(2, 3, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertFalse(areCongruent);
-	}
-
 	@NearFalsePoint(
 		predicate = "a + b + c",
 		dnf = "a + b + c",
@@ -59,14 +51,6 @@ class TriCongruenceTest {
 			@Valuation(clause = 'c', valuation = false)
 		}
 	)
-	@Test
-	public void Line14PredicateTestFFF2() {
-		Triangle t1 = new Triangle(2, 3, 7);
-		Triangle t2 = new Triangle(2, 3, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertFalse(areCongruent);
-	}
-
 	@NearFalsePoint(
 		predicate = "a + b + c",
 		dnf = "a + b + c",
@@ -79,7 +63,7 @@ class TriCongruenceTest {
 		}
 	)
 	@Test
-	public void Line14PredicateTestFFF3() {
+	public void Line14PredicateTestFFF() {
 		Triangle t1 = new Triangle(2, 3, 7);
 		Triangle t2 = new Triangle(2, 3, 7);
 		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
@@ -141,7 +125,7 @@ class TriCongruenceTest {
 	}
 
 	// Line 15 Predicate CC: {TT, FF}
-	// Line 15 Predicate CACC: {TF, FF, FT   OR    TT, FF}
+	// Line 15 Predicate CACC: {TF, FF, FT}   OR    {TT, FF}
 	// So with {TT, FF} we can satisfy CC and CACC
 
 	@ClauseCoverage(
@@ -151,14 +135,6 @@ class TriCongruenceTest {
 			@Valuation(clause = 'e', valuation = true)
 		}
 	)
-	@Test
-	public void Line15PredicateTestTT1() {
-		Triangle t1 = new Triangle(-2, 3, 7);
-		Triangle t2 = new Triangle(-2, 3, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertFalse(areCongruent);
-	}
-
 	@CACC(
 		predicate = "d + e",
 		majorClause = 'd',
@@ -168,14 +144,6 @@ class TriCongruenceTest {
 		},
 		predicateValue = true
 	)
-	@Test
-	public void Line15PredicateTestTT2() {
-		Triangle t1 = new Triangle(-2, 3, 7);
-		Triangle t2 = new Triangle(-2, 3, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertFalse(areCongruent);
-	}
-
 	@CACC(
 		predicate = "d + e",
 		majorClause = 'e',
@@ -186,7 +154,7 @@ class TriCongruenceTest {
 		predicateValue = true
 	)
 	@Test
-	public void Line15PredicateTestTT3() {
+	public void Line15PredicateTestTT() {
 		Triangle t1 = new Triangle(-2, 3, 7);
 		Triangle t2 = new Triangle(-2, 3, 7);
 		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
@@ -200,14 +168,6 @@ class TriCongruenceTest {
 			@Valuation(clause = 'e', valuation = false)
 		}
 	)
-	@Test
-	public void Line15PredicateTestFF1() {
-		Triangle t1 = new Triangle(2, 6, 7);
-		Triangle t2 = new Triangle(2, 6, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertTrue(areCongruent);
-	}
-
 	@CACC(
 		predicate = "d + e",
 		majorClause = 'd',
@@ -217,14 +177,6 @@ class TriCongruenceTest {
 		},
 		predicateValue = true
 	)
-	@Test
-	public void Line15PredicateTestFF2() {
-		Triangle t1 = new Triangle(2, 6, 7);
-		Triangle t2 = new Triangle(2, 6, 7);
-		boolean areCongruent = TriCongruence.areCongruent(t1, t2);
-		Assertions.assertTrue(areCongruent);
-	}
-
 	@CACC(
 		predicate = "d + e",
 		majorClause = 'e',
@@ -235,7 +187,7 @@ class TriCongruenceTest {
 		predicateValue = true
 	)
 	@Test
-	public void Line15PredicateTestFF3() {
+	public void Line15PredicateTestFF() {
 		Triangle t1 = new Triangle(2, 6, 7);
 		Triangle t2 = new Triangle(2, 6, 7);
 		boolean areCongruent = TriCongruence.areCongruent(t1, t2);

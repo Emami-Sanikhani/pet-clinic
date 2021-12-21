@@ -11,6 +11,7 @@ import org.springframework.samples.petclinic.visit.Visit;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -35,14 +36,11 @@ public class PriceCalculatorTest {
 		when(p1.getVisitsUntilAge(anyInt())).thenReturn(new ArrayList<>());
 		when(p2.getBirthDate()).thenReturn(LocalDate.of(LocalDate.now().getYear(), 1, 1));
 		when(p2.getVisitsUntilAge(anyInt())).thenReturn(Arrays.asList(v1, v1));
-		when(p3.getBirthDate()).thenReturn(LocalDate.of(2000, 1, 1));
-		List<Visit> p3_visits = new ArrayList<>();
-		for(int i = 0; i < 100; i++)
-			p3_visits.add(v1);
-		for(int i = 0; i < 100; i++)
-			p3_visits.add(v2);
+		when(p3.getBirthDate()).thenReturn(LocalDate.of(LocalDate.now().getYear() - 2, 1, 1));
+		List<Visit> p3_visits = new ArrayList<>(Arrays.asList(v1, v2));
 		when(p3.getVisitsUntilAge(anyInt())).thenReturn(p3_visits);
 	}
+
 
 	@Test
 	public void calcPriceWithNoPetsTest() {
@@ -53,15 +51,15 @@ public class PriceCalculatorTest {
 	@Test
 	public void calcPriceWithAllPetTypesTest() {
 		List<Pet> pets = new ArrayList<>(Arrays.asList(p1, p2, p3));
-		assertEquals(8160.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+		assertEquals(9120.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
 	}
 
 	@Test
 	public void calcPriceWithHighDiscountTest() {
 		List<Pet> pets = new ArrayList<>();
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 10; i++)
 			pets.add(p2);
-		assertEquals(9.745544E7, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+		assertEquals(4.40622015125544E15, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
 	}
 
 	@Test
@@ -77,12 +75,36 @@ public class PriceCalculatorTest {
 		List<Pet> pets = new ArrayList<>();
 		for(int i = 0; i < 10; i++)
 			pets.add(p3);
-		assertEquals(4590200.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+		assertEquals(2.4265416E8, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
 	}
 
 	@Test
 	public void calcPriceWithP1P3Test() {
 		List<Pet> pets = new ArrayList<>(Arrays.asList(p1, p3, p3, p1, p3, p1, p3, p1, p1, p3));
-		assertEquals(4590200.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+		assertEquals(1954560.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+	}
+
+	@Test
+	public void calcPriceWithP1P2Test() {
+		List<Pet> pets = new ArrayList<>(Arrays.asList(p1, p2, p2, p1, p1, p1, p2));
+		assertEquals(1423600.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+	}
+
+	@Test
+	public void calcPriceWithSingleP1() {
+		List<Pet> pets = new ArrayList<>(Collections.singletonList(p1));
+		assertEquals(2400.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+	}
+
+	@Test
+	public void calcPriceWithSingleP2() {
+		List<Pet> pets = new ArrayList<>(Collections.singletonList(p2));
+		assertEquals(3360.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
+	}
+
+	@Test
+	public void calcPriceWithSingleP3() {
+		List<Pet> pets = new ArrayList<>(Collections.singletonList(p3));
+		assertEquals(3360.0, PriceCalculator.calcPrice(pets, 1000, 2000), 0);
 	}
 }
